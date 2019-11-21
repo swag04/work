@@ -9,7 +9,7 @@ void printMsg1(const int a)
 	 ptr = Msg ;
    while(*ptr != '\0'){
       ITM_SendChar(*ptr);
-     //printf("shubham"); 
+      
 		 ++ptr;
    }
 }
