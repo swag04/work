@@ -17,6 +17,13 @@ void printMsg2p(const int a, const int b)
 {
 	 char Msg[100];
 	 char *ptr;
+	sprintf(Msg,"\nVGA Coordinates :\n X   Y \n ");
+	ptr = Msg ;
+   while(*ptr != '\0')
+	 {
+      ITM_SendChar(*ptr);
+      ++ptr;
+   }
 	 sprintf(Msg, "\n %d", a);
 	 ptr = Msg ;
    while(*ptr != '\0')
@@ -24,7 +31,7 @@ void printMsg2p(const int a, const int b)
       ITM_SendChar(*ptr);
       ++ptr;
    }
-	 sprintf(Msg, "\n %d", b);
+	 sprintf(Msg, " %d", b);
 	 ptr = Msg ;
    while(*ptr != '\0')
 	 {
