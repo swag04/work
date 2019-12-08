@@ -8,6 +8,8 @@ __main  FUNCTION
 ; S10 CONTAION FINAL X
 	 VLDR.F32 S1,=1 ; S1 INITIALISED TO 1
 	 VLDR.F32 S23,=0.5 ; S23 INITIALISED TO 0.5 , USED AS THRESHOLD
+	 MOV R4, #1	; TO INCREMENT
+	 MOV R5, #0
 	 MOV R7, #0		;R7 is used to know which logic you want to implement
 	 BAL MENU
 	 
@@ -32,53 +34,120 @@ ANDLOGIC
 		VLDR.F32 S11,=0.2 ; W2
 		VLDR.F32 S12,=0.2 ; W3
 		VLDR.F32 S13,=-0.2 ; Bias
-		B	NEXT
+		CMP R5, #0
+		BEQ NEXT
+		CMP R5, #1
+		BEQ NEXT1
+		CMP R5, #2
+		BEQ NEXT2
+		CMP R5, #3
+		BEQ NEXT3
 		
 ORLOGIC
 		VLDR.F32 S14,=-0.1 ; W1 - these are weights mentioned in python code for OR gate
 		VLDR.F32 S11,=0.7 ; W2
 		VLDR.F32 S12,=0.7 ; W3
 		VLDR.F32 S13,=-0.1 ; Bias
-		B	NEXT
+		CMP R5, #0
+		BEQ NEXT
+		CMP R5, #1
+		BEQ NEXT1
+		CMP R5, #2
+		BEQ NEXT2
+		CMP R5, #3
+		BEQ NEXT3
 		
 NOTLOGIC
 		VLDR.F32 S14,=0.5 ; W1 - these are weights mentioned in python code for NOT gate
 		VLDR.F32 S11,=-0.7 ; W2
 		VLDR.F32 S12,=0 ; W3
 		VLDR.F32 S13,=0.1 ; Bias
-		B	NEXT
+		CMP R5, #0
+		BEQ NEXT
+		CMP R5, #1
+		BEQ NEXT1
+		CMP R5, #2
+		BEQ NEXT2
+		CMP R5, #3
+		BEQ NEXT3
 		
 NANDLOGIC
 		VLDR.F32 S14,=0.6 ; W1 - these are weights mentioned in python code for NAND gate
 		VLDR.F32 S11,=-0.8 ; W2
 		VLDR.F32 S12,=-0.8 ; W3
 		VLDR.F32 S13,=0.3 ; Bias
-		B	NEXT
+		CMP R5, #0
+		BEQ NEXT
+		CMP R5, #1
+		BEQ NEXT1
+		CMP R5, #2
+		BEQ NEXT2
+		CMP R5, #3
+		BEQ NEXT3
 		
 NORLOGIC
 		VLDR.F32 S14,=0.5 ; W1 - these are weights mentioned in python code for NOR gate
 		VLDR.F32 S11,=-0.7 ; W2
 		VLDR.F32 S12,=-0.7 ; W3
 		VLDR.F32 S13,=0.1 ; Bias
-		B  	NEXT
+		CMP R5, #0
+		BEQ NEXT
+		CMP R5, #1
+		BEQ NEXT1
+		CMP R5, #2
+		BEQ NEXT2
+		CMP R5, #3
+		BEQ NEXT3
 		
 XORLOGIC		
 		VLDR.F32 S14,=-5 ; W1 - these are weights mentioned in python code for XOR gate
 		VLDR.F32 S11,=20 ; W2
 		VLDR.F32 S12,=10 ; W3
 		VLDR.F32 S13,=1 ; Bias
-		B	NEXT
+		CMP R5, #0
+		BEQ NEXT
+		CMP R5, #1
+		BEQ NEXT1
+		CMP R5, #2
+		BEQ NEXT2
+		CMP R5, #3
+		BEQ NEXT3
 
 XNORLOGIC
 		VLDR.F32 S14,=-5 ; W1 - these are weights mentioned in python code for AND gate
 		VLDR.F32 S11,=20 ; W2
 		VLDR.F32 S12,=10 ; W3
 		VLDR.F32 S13,=1 ; Bias
-		B	NEXT	
+		CMP R5, #0
+		BEQ NEXT
+		CMP R5, #1
+		BEQ NEXT1
+		CMP R5, #2
+		BEQ NEXT2
+		CMP R5, #3
+		BEQ NEXT3	
 	
 NEXT    ; INPUT VALUE IS LOADED i.e X1,X2,X3
 		VLDR.F32 S15,=1 ; X1
 		VLDR.F32 S16,=0 ; X2
+		VLDR.F32 S17,=0 ; X3
+		B OPERATION
+		
+NEXT1    ; INPUT VALUE IS LOADED i.e X1,X2,X3
+		VLDR.F32 S15,=1 ; X1
+		VLDR.F32 S16,=0 ; X2
+		VLDR.F32 S17,=1 ; X3
+		B OPERATION		
+		
+NEXT2    ; INPUT VALUE IS LOADED i.e X1,X2,X3
+		VLDR.F32 S15,=1 ; X1
+		VLDR.F32 S16,=1 ; X2
+		VLDR.F32 S17,=0 ; X3
+		B OPERATION
+		
+NEXT3    ; INPUT VALUE IS LOADED i.e X1,X2,X3
+		VLDR.F32 S15,=1 ; X1
+		VLDR.F32 S16,=1 ; X2
 		VLDR.F32 S17,=1 ; X3
 		B OPERATION
 	
@@ -100,15 +169,29 @@ OPERATION
 		BLT LOGIC0
 		BGT LOGIC1
 FINAL
-		;VCVT.U32.F32 S6,S6 
-	    ;VMOV R0,S6
+        MOV R1,R7
+	    VCVT.U32.F32 S16,S16
+	    VMOV R2,S16
+	    VCVT.U32.F32 S17,S17
+	    VMOV R3,S17 	    
 		BL printMsg1  ; PRINT FUNCTION IS CALLED
-		B STOP
-
-LOGIC0 LDR R0,= 0x00000000
-	   B FINAL
+		ADD R5,R5,R4
+		CMP R5,#4
+		BNE MENU
+		MOV R5, #0
+		ADD R7,R7,R4
+		CMP R7,#5
+		BNE MENU
+		BEQ STOP
+		
+		
+LOGIC0 LDR R0,= 0x00000000  
+       B FINAL
+	   ;BL printMsg1
+	   
+	   
 LOGIC1 LDR R0,= 0x00000001
-	   B FINAL
+       B FINAL
 ; e^x IMPLEMENTATION STARTED
 EXP	
 	   VMOV.F S7,S10
